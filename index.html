@@ -8,13 +8,8 @@
 </head>
 
 <body>
-  <div id="app"></div>
-  <script type="module" src="/src/firebase.js"></script>
-  <script type="module">
-    import { app } from '/src/firebase.js';
-    console.log('Firebase initialized:', app);
-    document.getElementById('app').innerHTML = '<h1>Firebase initialized successfully! Check console for app object.</h1>';
-  </script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 
 </html>
