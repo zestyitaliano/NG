@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>No Gatekeeping</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/firebase.js"></script>
+  <script type="module">
+    import { app } from '/src/firebase.js';
+    console.log('Firebase initialized:', app);
+    document.getElementById('app').innerHTML = '<h1>Firebase initialized successfully! Check console for app object.</h1>';
+  </script>
+</body>
+
+</html>
