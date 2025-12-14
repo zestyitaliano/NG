@@ -1,15 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import GridLayout from '../components/homepage/GridLayout';
 
 const LandingPage = () => {
-    const [showGrid, setShowGrid] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const containerRef = useRef(null);
 
     useEffect(() => {
         const handleScroll = () => {
-            // Trigger animation as soon as user starts scrolling
-            const threshold = 30;
-            setShowGrid(window.scrollY > threshold);
+            // Logic: Calculate how far we've scrolled relative to the viewport height.
+            // We want the animation to be fully physically complete by the time we scroll 1.5 viewport heights.
+            // Total scrollable area is 300vh.
+
+            const scrollY = window.scrollY;
+            const innerHeight = window.innerHeight;
+
+            // Calculate 0 to 1 progress based on first 100vh of scroll
+            // Clamped between 0 and 1
+            const rawProgress = scrollY / (innerHeight * 1.2);
+            const newProgress = Math.min(Math.max(rawProgress, 0), 1);
+
+            setProgress(newProgress);
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -17,53 +28,49 @@ const LandingPage = () => {
     }, []);
 
     return (
-        // Scroll Track: Taller than viewport to allow "scrolling" interaction
-        // which triggers the internal state change without moving the fixed viewport.
-        <main className="relative h-[150vh] w-full bg-gray-50">
+        // Scroll Track: 300vh to give plenty of room to "scrub" the animation
+        <main ref={containerRef} className="relative h-[300vh] w-full bg-offwhite">
 
-            {/* Fixed Viewport Container: Everything visual happens inside here */}
-            <div className="fixed inset-0 w-full h-full overflow-hidden flex flex-col items-center justify-center">
+            {/* Sticky Viewport: Locks the content in place while we scroll */}
+            <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center">
 
                 {/* Layer 1: Hero / Header 
-            Stays centered but fades/blurs/shrinks when the grid appears.
+            Fades out and moves UP as progress increases.
         */}
-                <header className={`
-            absolute inset-0 flex flex-col items-center justify-center z-0
-            transition-all duration-1000 cubic-bezier(0.7, 0, 0.3, 1)
-            ${showGrid ? 'opacity-0 blur-md scale-90 translate-y-[-50px]' : 'opacity-100 scale-100 translate-y-0'}
-        `}>
+                <header
+                    className="absolute inset-0 flex flex-col items-center justify-center z-0 transition-transform duration-100 ease-out will-change-transform"
+                    style={{
+                        opacity: 1 - progress * 2, // Fades out fast (by 50% scroll)
+                        transform: `translateY(-${progress * 200}px) scale(${1 - progress * 0.2})`,
+                        filter: `blur(${progress * 10}px)`
+                    }}
+                >
                     <div className="text-center px-4 max-w-4xl">
                         <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 text-neutral-900">
                             Design<span className="text-primary">Suite</span>
                         </h1>
                         <p className="text-xl md:text-3xl text-neutral-500 font-medium tracking-tight">
-                            Ten essential tools. <span className="text-secondary-red">One dashboard.</span>
+                            Ten essential tools. <span className="text-primary">One dashboard.</span>
                         </p>
                     </div>
                 </header>
 
-                {/* Scroll Hint */}
-                <div className={`
-            fixed bottom-10 left-1/2 -translate-x-1/2 text-neutral-400 
-            transition-all duration-500 flex flex-col items-center gap-2
-            ${showGrid ? 'opacity-0 translate-y-10' : 'opacity-100 animate-bounce'}
-        `}>
+                {/* Scroll Hint: Disappears immediately on scroll */}
+                <div
+                    className="fixed bottom-10 left-1/2 -translate-x-1/2 text-neutral-400 flex flex-col items-center gap-2"
+                    style={{ opacity: 1 - progress * 3 }}
+                >
                     <span className="text-sm font-semibold tracking-widest uppercase">Scroll to Open</span>
-                    <ChevronDown size={20} />
+                    <ChevronDown size={20} className="animate-bounce" />
                 </div>
 
                 {/* Layer 2: Grid Container 
-            Overlays the header. Initially invisible/pointer-events-none.
-            When active, it handles the layout of the tiles.
+            The grid consumes the `progress` prop to drive its children's entrance.
         */}
-                <div className={`
-            absolute inset-0 z-10 flex items-center justify-center 
-            transition-all duration-500
-            ${showGrid ? 'pointer-events-auto' : 'pointer-events-none'}
-        `}>
-                    <div className="w-full h-full overflow-y-auto flex items-center justify-center no-scrollbar">
-                        {/* We pass the visibility state to trigger the individual tile animations */}
-                        <GridLayout isVisible={showGrid} />
+                <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                    {/* Enable pointers only when animation is reasonably started so we can click tools */}
+                    <div className={`w-full max-w-7xl px-4 ${progress > 0.1 ? 'pointer-events-auto' : ''}`}>
+                        <GridLayout progress={progress} />
                     </div>
                 </div>
 
