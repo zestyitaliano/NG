@@ -22,15 +22,17 @@ export default function Navbar() {
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '1rem',
-        backgroundColor: '#333',
-        color: 'white',
+        backgroundColor: '#efefef', // offwhite
+        color: '#1982c4', // primary
+        borderBottom: '2px solid #1982c4',
         marginBottom: '2rem'
     };
 
     const linkStyle = {
-        color: 'white',
+        color: '#1982c4',
         textDecoration: 'none',
-        marginRight: '1rem'
+        marginRight: '1rem',
+        fontWeight: 'bold'
     };
 
     return (

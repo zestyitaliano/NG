@@ -34,10 +34,10 @@ const LandingPage = () => {
         `}>
                     <div className="text-center px-4 max-w-4xl">
                         <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 text-neutral-900">
-                            Design<span className="text-blue-600">Suite</span>
+                            Design<span className="text-primary">Suite</span>
                         </h1>
                         <p className="text-xl md:text-3xl text-neutral-500 font-medium tracking-tight">
-                            Ten essential tools. <span className="text-blue-500">One dashboard.</span>
+                            Ten essential tools. <span className="text-secondary-red">One dashboard.</span>
                         </p>
                     </div>
                 </header>
