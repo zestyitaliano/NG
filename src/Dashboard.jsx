@@ -77,8 +77,6 @@ export default function Dashboard() {
                     </ul>
                 )}
             </div>
-
-            <button onClick={handleLogout} style={{ background: '#d32f2f' }}>Log Out</button>
         </div>
     );
 }
